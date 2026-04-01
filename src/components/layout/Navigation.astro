@@ -1,0 +1,52 @@
+---
+import DarkModeToggle from '../ui/DarkModeToggle';
+
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/about', label: 'About' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  class="sticky top-0 z-50 border-b-2 border-ink backdrop-blur-md"
+  style="background: var(--nav-bg); transition: background 0.2s ease, border-color 0.2s ease;"
+>
+  <div class="w-full max-w-170 mx-auto px-6 flex items-center justify-between h-[60px]">
+
+    <a href="/" aria-label="Home" class="shrink-0 no-underline">
+      <span class="font-display font-bold text-base tracking-wide px-2 py-0.5 border-2 border-ink bg-accent text-[#1f1f1f]">
+        AR
+      </span>
+    </a>
+
+    <div class="flex items-center gap-4">
+      <nav>
+        <ul class="flex items-center gap-5 list-none m-0 p-0">
+          {navLinks.map((link) => {
+            const isActive = link.href === '/'
+              ? currentPath === '/'
+              : currentPath.startsWith(link.href);
+            return (
+              <li>
+                <a
+                  href={link.href}
+                  class:list={[
+                    'font-display font-semibold text-sm text-fg no-underline pb-0.5 border-b-2 transition-colors duration-150 whitespace-nowrap',
+                    isActive ? 'border-accent' : 'border-transparent hover:border-accent',
+                  ]}
+                >
+                  {link.label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+      <DarkModeToggle client:load />
+    </div>
+
+  </div>
+</header>

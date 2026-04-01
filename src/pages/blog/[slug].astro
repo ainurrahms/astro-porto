@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageTransition from '../../components/motion/PageTransition';
+import TableOfContents from '../../components/blog/TableOfContents';
+import ShareButtons from '../../components/blog/ShareButtons';
+import { getPostBySlug, getAllPosts } from '../../lib/notion';
+import { formatDate, estimateReadingTime, extractHeadings } from '../../lib/utils';
+import { marked } from 'marked';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/blog');
+
+const post = await getPostBySlug(slug);
+if (!post) return Astro.redirect('/blog');
+
+const allPosts = await getAllPosts();
+const currentIndex = allPosts.findIndex((p) => p.slug === slug);
+const prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+
+const htmlContent = await marked(post.content ?? '', { breaks: true });
+const headings = extractHeadings(post.content ?? '');
+const readingTime = estimateReadingTime(post.content ?? '');
+const canonicalUrl = `${Astro.site}blog/${slug}`;
+
+const headingHtml = (htmlContent as string).replace(
+  /<h([23])>(.*?)<\/h\1>/g,
+  (_, level, text) => {
+    const clean = text.replace(/<[^>]+>/g, '');
+    const id = clean.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    return `<h${level} id="${id}">${text}</h${level}>`;
+  }
+);
+---
+
+<BaseLayout
+  title={post.title}
+  description={post.excerpt ?? `Read "${post.title}" on this blog.`}
+  article={true}
+  publishedDate={post.publishedDate}
+>
+  <PageTransition client:load>
+    <div class="w-full max-w-170 mx-auto px-6 pt-12 pb-16">
+
+      <!-- Post Header -->
+      <header class="mb-10">
+        {post.tags.length > 0 && (
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            {post.tags.map((tag) => (
+              <span class="font-display font-semibold text-[11px] px-2 py-0.5 border-2 border-ink bg-accent text-[#1f1f1f] leading-snug">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+        <h1 class="font-display font-bold text-[clamp(24px,5vw,36px)] text-fg m-0 mb-4 leading-tight">
+          {post.title}
+        </h1>
+        <div class="flex items-center gap-6 flex-wrap">
+          <time dateTime={post.publishedDate} class="font-sans text-[13px] font-medium text-muted">
+            {formatDate(post.publishedDate)}
+          </time>
+          <span class="font-sans text-[13px] text-subtle">{readingTime} min read</span>
+        </div>
+      </header>
+
+      {post.coverUrl && (
+        <div class="mb-10 border-2 border-ink shadow-neo">
+          <img src={post.coverUrl} alt={post.title} class="w-full h-auto block" loading="lazy" />
+        </div>
+      )}
+
+      <!-- Layout: content + TOC sidebar on desktop -->
+      <div class="block lg:grid lg:grid-cols-[1fr_200px] lg:gap-8 lg:items-start">
+
+        <!-- TOC sidebar (desktop only) -->
+        {headings.length > 0 && (
+          <aside class="hidden lg:block lg:order-2">
+            <div class="sticky top-20">
+              <TableOfContents headings={headings} client:load />
+            </div>
+          </aside>
+        )}
+
+        <!-- Article body -->
+        <div class="lg:order-1">
+          <article class="prose" set:html={headingHtml} />
+
+          <!-- Share -->
+          <div class="mt-12 pt-6 border-t-2 border-ink">
+            <p class="font-display font-bold text-sm text-fg m-0 mb-3">Share this article</p>
+            <ShareButtons title={post.title} url={canonicalUrl} client:load />
+          </div>
+
+          <!-- Prev / Next -->
+          {(prevPost || nextPost) && (
+            <nav class="mt-12 grid grid-cols-2 gap-4">
+              {prevPost ? (
+                <a
+                  href={`/blog/${prevPost.slug}`}
+                  class="neo-card p-4 no-underline flex flex-col gap-1"
+                >
+                  <span class="font-sans text-[11px] font-medium text-subtle">← Previous</span>
+                  <span class="font-display font-semibold text-sm text-fg">{prevPost.title}</span>
+                </a>
+              ) : <div />}
+              {nextPost ? (
+                <a
+                  href={`/blog/${nextPost.slug}`}
+                  class="neo-card p-4 no-underline flex flex-col gap-1 text-right"
+                >
+                  <span class="font-sans text-[11px] font-medium text-subtle">Next →</span>
+                  <span class="font-display font-semibold text-sm text-fg">{nextPost.title}</span>
+                </a>
+              ) : <div />}
+            </nav>
+          )}
+        </div>
+
+      </div>
+    </div>
+  </PageTransition>
+</BaseLayout>

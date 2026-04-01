@@ -1,0 +1,149 @@
+@import "tailwindcss";
+@import "@fontsource/space-grotesk/400.css";
+@import "@fontsource/space-grotesk/600.css";
+@import "@fontsource/space-grotesk/700.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+
+/* ─── Dark mode via data-theme attribute ───────────────────────── */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* ─── Light mode CSS variables ─────────────────────────────────── */
+:root {
+  --bg: #ffffff;
+  --bg-card: #f7f7f7;
+  --fg: #1f1f1f;
+  --fg-muted: #3c3c3c;
+  --fg-subtle: #c4c4c4;
+  --border: #1f1f1f;
+  --shadow: #1f1f1f;
+  --nav-bg: rgba(255, 255, 255, 0.92);
+  --accent: #00ffab;
+  --accent-red: #ff3d00;
+}
+
+/* ─── Dark mode CSS variables ───────────────────────────────────── */
+[data-theme="dark"] {
+  --bg: #0f0f0f;
+  --bg-card: #1a1a1a;
+  --fg: #f0f0f0;
+  --fg-muted: #b0b0b0;
+  --fg-subtle: #555555;
+  --border: #f0f0f0;
+  --shadow: #f0f0f0;
+  --nav-bg: rgba(15, 15, 15, 0.92);
+  --accent: #00ffab;
+  --accent-red: #ff3d00;
+}
+
+/* ─── Tailwind theme tokens (reference CSS vars inline) ────────── */
+@theme inline {
+  /* Colors */
+  --color-fg:      var(--fg);
+  --color-muted:   var(--fg-muted);
+  --color-subtle:  var(--fg-subtle);
+  --color-surface: var(--bg);
+  --color-card:    var(--bg-card);
+  --color-accent:  var(--accent);
+  --color-danger:  var(--accent-red);
+  --color-ink:     var(--border);
+
+  /* Fonts */
+  --font-display: "Space Grotesk", sans-serif;
+  --font-sans:    "Inter", sans-serif;
+  --font-mono:    "JetBrains Mono", monospace;
+
+  /* Neo-Brutalism shadows */
+  --shadow-neo:    4px 4px 0 var(--shadow);
+  --shadow-neo-sm: 3px 3px 0 var(--shadow);
+  --shadow-neo-xs: 2px 2px 0 var(--shadow);
+}
+
+/* ─── Base reset ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  background-color: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg);
+  font-family: "Inter", sans-serif;
+}
+
+/* ─── Neo-Brutalism interaction classes ─────────────────────────── */
+/* Used where Tailwind hover: can't easily combine translate + shadow */
+.neo-card {
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-neo, 4px 4px 0 var(--shadow));
+  background: var(--bg);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.neo-card:hover  { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--shadow); }
+.neo-card:active { transform: translate(4px, 4px); box-shadow: none; }
+
+.neo-btn {
+  border: 2px solid var(--border);
+  box-shadow: 3px 3px 0 var(--shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
+  cursor: pointer;
+}
+.neo-btn:hover  { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--shadow); }
+.neo-btn:active { transform: translate(3px, 3px); box-shadow: none; }
+
+/* ─── Prose (blog content) ──────────────────────────────────────── */
+.prose {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--fg-muted);
+}
+.prose h2 { font-size: 28px; margin-top: 2rem; margin-bottom: 1rem; color: var(--fg); font-family: "Space Grotesk", sans-serif; font-weight: 700; }
+.prose h3 { font-size: 22px; margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--fg); font-family: "Space Grotesk", sans-serif; font-weight: 600; }
+.prose p  { margin-bottom: 1rem; }
+.prose a  { color: var(--fg); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+.prose a:hover { background-color: var(--accent); color: #1f1f1f; }
+.prose code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--fg-subtle);
+  padding: 0.1em 0.4em;
+  color: var(--fg);
+}
+.prose pre {
+  background: var(--fg);
+  color: var(--bg);
+  padding: 1.25rem;
+  border: 2px solid var(--border);
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.prose pre code { background: transparent; border: none; padding: 0; color: inherit; font-size: 14px; }
+.prose blockquote { border-left: 4px solid var(--accent); padding-left: 1rem; margin-left: 0; font-style: italic; color: var(--fg-muted); }
+.prose ul, .prose ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+.prose li { margin-bottom: 0.25rem; }
+.prose img { max-width: 100%; height: auto; border: 2px solid var(--border); }
+.prose hr { border: none; border-top: 2px solid var(--border); margin: 2rem 0; }
+
+/* ─── Selection & scrollbar ─────────────────────────────────────── */
+::selection { background-color: var(--accent); color: #1f1f1f; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-card); }
+::-webkit-scrollbar-thumb { background: var(--fg-subtle); }
+::-webkit-scrollbar-thumb:hover { background: var(--fg); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

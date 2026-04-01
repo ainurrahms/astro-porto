@@ -1,0 +1,8 @@
+[
+  { "name": "TypeScript", "slug": "typescript", "color": "#3178C6" },
+  { "name": "React", "slug": "react", "color": "#61DAFB" },
+  { "name": "Next.js", "slug": "nextdotjs", "color": "#000000" },
+  { "name": "Astro", "slug": "astro", "color": "#FF5D01" },
+  { "name": "Tailwind CSS", "slug": "tailwindcss", "color": "#06B6D4" },
+  { "name": "Git", "slug": "git", "color": "#F05032" }
+]

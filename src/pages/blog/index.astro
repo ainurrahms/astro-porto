@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageTransition from '../../components/motion/PageTransition';
+import BlogList from '../../components/blog/BlogList';
+import { getAllPosts } from '../../lib/notion';
+
+export const prerender = false;
+
+const posts = await getAllPosts();
+const allTags = [...new Set(posts.flatMap((p) => p.tags))].sort();
+---
+
+<BaseLayout title="Blog" description="Articles about web development, design, and things I'm learning.">
+  <PageTransition client:load>
+    <div class="w-full max-w-170 mx-auto px-6 pt-16 pb-16">
+
+      <div class="mb-12">
+        <h1 class="font-display font-bold text-[clamp(26px,6vw,40px)] text-fg m-0 mb-2">Blog</h1>
+        <p class="font-sans text-base text-muted m-0">
+          {posts.length} {posts.length === 1 ? 'post' : 'posts'} about code, design, and learning in public.
+        </p>
+      </div>
+
+      <BlogList posts={posts} allTags={allTags} client:load />
+
+    </div>
+  </PageTransition>
+</BaseLayout>

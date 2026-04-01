@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageTransition from '../components/motion/PageTransition';
+import StaggerContainer, { StaggerItem } from '../components/motion/StaggerContainer';
+import ProjectCard from '../components/projects/ProjectCard';
+import Button from '../components/ui/Button';
+import PostCard from '../components/blog/PostCard';
+import { getFeaturedPosts } from '../lib/notion';
+import projectsData from '../content/projects/projects.json';
+
+export const prerender = false;
+
+const featuredPosts = await getFeaturedPosts();
+const projects = projectsData.filter((p) => p.featured);
+---
+
+<BaseLayout title="Home" description="Personal portfolio and blog — sharing what I build and learn.">
+  <PageTransition client:load>
+    <div class="w-full max-w-170 mx-auto px-6 pt-16 pb-16">
+
+      <!-- HERO -->
+      <section class="mb-20">
+        <p class="font-display font-semibold text-[13px] text-accent bg-fg inline-block px-2.5 py-0.5 mb-5 uppercase tracking-widest">
+          Available for work
+        </p>
+        <h1 class="font-display font-bold text-[clamp(30px,7vw,52px)] text-fg m-0 mb-4 leading-[1.1]">
+          Hi, I'm <span class="bg-accent text-[#1f1f1f] px-1.5">Ainur Rahman</span>
+        </h1>
+        <p class="font-sans text-[clamp(16px,2.5vw,20px)] text-muted m-0 mb-8 leading-relaxed max-w-[520px]">
+          I'm a frontend engineers who loves building clean, performant web experiences.
+          I write about code, design, and the things I ship.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <Button href="/blog" variant="primary" client:load>Read the Blog</Button>
+          <Button href="/about" variant="outline" client:load>About Me →</Button>
+        </div>
+      </section>
+
+      <!-- SELECTED PROJECTS -->
+      <section class="mb-20">
+        <div class="flex items-baseline justify-between border-b-2 border-ink pb-3 mb-6">
+          <h2 class="font-display font-bold text-[22px] text-fg m-0">Selected Projects</h2>
+        </div>
+        <StaggerContainer className="flex flex-col gap-5" client:load>
+          {projects.map((project) => (
+            <StaggerItem client:load>
+              <ProjectCard project={project} client:load />
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
+      </section>
+
+      <!-- LATEST POSTS -->
+      {featuredPosts.length > 0 && (
+        <section class="mb-20">
+          <div class="flex items-baseline justify-between border-b-2 border-ink pb-3 mb-6">
+            <h2 class="font-display font-bold text-[22px] text-fg m-0">Latest Posts</h2>
+            <a href="/blog" class="font-display font-semibold text-[13px] text-fg no-underline border-b-2 border-accent whitespace-nowrap">
+              All posts →
+            </a>
+          </div>
+          <StaggerContainer className="flex flex-col gap-4" client:load>
+            {featuredPosts.map((post) => (
+              <StaggerItem client:load>
+                <PostCard post={post} client:load />
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </section>
+      )}
+
+    </div>
+  </PageTransition>
+</BaseLayout>

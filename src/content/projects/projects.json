@@ -1,0 +1,25 @@
+[
+  {
+    "title": "Portfolio & Blog",
+    "description": "Personal portfolio website built with Astro, Tailwind CSS v4, and Notion as CMS. Features Neo-Brutalism design, smooth Framer Motion animations, and high Lighthouse scores.",
+    "url": "https://yoursite.com",
+    "repoUrl": "https://github.com/yourusername/astro-portfolio",
+    "techStack": ["Astro", "React", "Tailwind CSS", "Framer Motion", "Notion API"],
+    "featured": true
+  },
+  {
+    "title": "E-Commerce Platform",
+    "description": "Full-stack e-commerce application with Next.js, TypeScript, and PostgreSQL. Includes cart, checkout flow, Stripe integration, and admin dashboard.",
+    "url": "https://shop.example.com",
+    "repoUrl": "https://github.com/yourusername/ecommerce-platform",
+    "techStack": ["Next.js", "TypeScript", "PostgreSQL", "Stripe", "Tailwind CSS"],
+    "featured": true
+  },
+  {
+    "title": "Real-time Chat App",
+    "description": "WebSocket-based chat application supporting multiple rooms, user authentication, and message history with infinite scroll.",
+    "repoUrl": "https://github.com/yourusername/realtime-chat",
+    "techStack": ["Node.js", "Socket.io", "React", "MongoDB"],
+    "featured": true
+  }
+]
