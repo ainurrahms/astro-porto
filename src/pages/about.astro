@@ -1,9 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageTransition from '../components/motion/PageTransition';
-import TechLogoGrid from '../components/projects/TechLogoGrid';
-import stackData from '../content/data/stack.json';
 import socialData from '../content/data/social.json';
+import StackedCards from '@/components/ui/StackedPhotos';
 
 export const prerender = true;
 ---
@@ -12,18 +11,19 @@ export const prerender = true;
   <PageTransition client:load>
     <div class="w-full max-w-170 mx-auto px-6 pt-16 pb-16">
 
+      <div class="hidden md:block mb-16">
+        <StackedCards client:load />
+      </div>
+
       <!-- Header -->
       <section class="mb-12">
         <h1 class="font-display font-bold text-[clamp(26px,6vw,40px)] text-fg m-0 mb-2">About Me</h1>
-        <p class="font-sans text-base text-muted m-0">Developer, builder, occasional writer.</p>
+        <p class="font-sans text-base text-muted m-0">Developer, builder, occasional writer sometimes become runner.</p>
       </section>
 
       <!-- Bio -->
       <section class="mb-14">
         <div class="flex flex-col gap-5 items-start">
-          <div class="neo-card w-[100px] h-[100px] flex items-center justify-center bg-accent font-display font-bold text-[32px] text-[#1f1f1f] shrink-0">
-            YN
-          </div>
           <div>
             <p class="font-sans text-base text-muted leading-[1.75] m-0 mb-4">
               I'm a frontend engineer based in Jakarta, Indonesia. I specialize in building
@@ -48,9 +48,8 @@ export const prerender = true;
         </div>
         <div class="flex flex-col gap-6">
           {[
-            { role: 'Frontend Developer', company: 'Awesome Startup', period: '2024 – Present', desc: 'Building scalable React applications, leading frontend architecture decisions, and improving DX with internal tooling.' },
-            { role: 'Full-stack Developer', company: 'Digital Agency', period: '2022 – 2024', desc: 'Delivered 10+ client projects using Next.js, Node.js, and PostgreSQL. Reduced average page load time by 40%.' },
-            { role: 'Junior Web Developer', company: 'Tech Company', period: '2021 – 2022', desc: 'Built and maintained web applications for internal tools and client-facing dashboards.' },
+            { role: 'Frontend Engineer', company: 'Amartha Financial', period: 'Aug 2021 – Present', desc: 'Frontend Engineer with fintech industry experience, specializing in investment feature development, lender dashboards, and digital financial service integrations within the React & Next.js ecosystem."' },
+            { role: 'Frontend Developer', company: 'TwisCode Software House', period: 'Jan 2021 - Jul 2021', desc: 'Contributed to multiple client-facing and internal tools across diverse domains, including IoT-based toilet management, equipment rental systems, and healthcare management platforms. Delivered end-to-end frontend solutions with a focus on usability and operational efficiency using React.js and Next.js.' },
           ].map((item) => (
             <div class="border-l-[3px] border-accent pl-4">
               <div class="flex flex-wrap gap-2 items-baseline mb-1">
@@ -89,7 +88,7 @@ export const prerender = true;
             </a>
           ))}
           <a
-            href="/resume.pdf"
+            href="https://drive.google.com/file/d/1QNqJAdKfArdN6mNcuA6Tg4pLDIGARm82/view"
             download
             class="neo-btn font-display font-semibold text-sm text-[#1f1f1f] bg-accent px-4 py-2 no-underline"
           >

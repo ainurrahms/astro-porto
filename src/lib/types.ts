@@ -16,6 +16,8 @@ export interface BlogPostContent extends BlogPost {
 
 export interface Project {
   title: string;
+  year?: string;
+  slug?: string;
   description: string;
   url?: string;
   repoUrl?: string;

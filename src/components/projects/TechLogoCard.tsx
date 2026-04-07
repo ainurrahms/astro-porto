@@ -11,7 +11,7 @@ export default function TechLogoCard({ tech }: { tech: TechStack }) {
     <motion.div
       variants={itemVariants}
       title={tech.name}
-      className="neo-card w-[72px] h-[72px] flex flex-col items-center justify-center gap-1 p-2 cursor-default"
+      className="neo-card w-18 h-18 flex flex-col items-center justify-center gap-1 p-2 cursor-default"
       whileHover={{ x: 2, y: 2, boxShadow: '2px 2px 0 var(--shadow)' }}
       whileTap={{ x: 4, y: 4, boxShadow: 'none' }}
     >

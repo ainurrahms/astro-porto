@@ -14,12 +14,17 @@ const currentPath = Astro.url.pathname;
   class="sticky top-0 z-50 border-b-2 border-ink backdrop-blur-md"
   style="background: var(--nav-bg); transition: background 0.2s ease, border-color 0.2s ease;"
 >
-  <div class="w-full max-w-170 mx-auto px-6 flex items-center justify-between h-[60px]">
+  <div class="w-full max-w-170 mx-auto px-6 flex items-center justify-between h-15">
 
     <a href="/" aria-label="Home" class="shrink-0 no-underline">
-      <span class="font-display font-bold text-base tracking-wide px-2 py-0.5 border-2 border-ink bg-accent text-[#1f1f1f]">
-        AR
-      </span>
+      <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-ink bg-accent">
+        <img 
+          src="/me.png" 
+          alt="Ainur Rahman" 
+          class="w-full h-full object-cover block" 
+          loading="lazy" 
+        />
+      </div>
     </a>
 
     <div class="flex items-center gap-4">
