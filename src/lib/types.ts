@@ -24,6 +24,8 @@ export interface Project {
   techStack: string[];
   featured: boolean;
   coverImage?: string;
+  challenges?: string[];
+  screenshots?: string[];
 }
 
 export interface TechStack {

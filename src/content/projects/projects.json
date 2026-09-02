@@ -1,10 +1,15 @@
 [
   {
     "title": "CarOps",
+    "slug": "carops",
     "description": "A portfolio website for a vehicle dealership management platform that streamlines fleet monitoring, time tracking, and multi-site operations all in one place.",
     "url": "https://carops.net",
     "techStack": ["Next.js", "ShadCN UI"],
-    "year":"2024",
-    "featured": true
+    "year": "2024",
+    "featured": true,
+    "challenges": [
+      "First Upwork project, working with an overseas client with very high attention to detail — even small mismatches between the Figma design and the built UI were called out and needed to be fixed."
+    ],
+    "screenshots": ["/images/projects/carops/hero.png"]
   }
 ]

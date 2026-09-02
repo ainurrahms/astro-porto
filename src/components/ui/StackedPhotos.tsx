@@ -5,24 +5,24 @@ import { useState } from 'react';
 
 const cards = [
   {
-    img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e',
-    title: 'Daily Life',
-    desc: 'Moments outside coding',
+    img: '/images/about-me/about-1.jpg',
+    title: 'Race Day',
+    desc: 'Crossing the finish line',
   },
   {
-    img: 'https://images.unsplash.com/photo-1520975922284-9e0ce827a1b4',
-    title: 'Fun Stuff',
-    desc: 'Skate, chill, explore',
+    img: '/images/about-me/about-2.jpg',
+    title: 'Above the Clouds',
+    desc: 'Summit views on the trail',
   },
   {
-    img: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    title: 'Running',
+    img: '/images/about-me/about-3.jpg',
+    title: 'Trail Running',
+    desc: 'Chasing the next peak',
+  },
+  {
+    img: '/images/about-me/about-4.jpg',
+    title: 'Night Run',
     desc: 'Keep moving forward',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
-    title: 'Nature',
-    desc: 'Reset & recharge',
   },
 ];
 
@@ -58,22 +58,25 @@ export default function StackedCards() {
               className="relative w-full h-full"
               style={{
                 transformStyle: 'preserve-3d',
+                willChange: 'transform',
               }}
               animate={{
                 rotateY: isActive ? 180 : 0,
               }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
             >
               {/* FRONT */}
               <div
                 className="absolute inset-0 rounded-2xl overflow-hidden"
                 style={{
+                  WebkitBackfaceVisibility: 'hidden',
                   backfaceVisibility: 'hidden',
                   transform: 'translateZ(1px)',
                 }}
               >
                 <img
-                  src={`${card.img}?w=400&h=500&fit=crop`}
+                  src={card.img}
+                  alt={card.title}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -83,6 +86,7 @@ export default function StackedCards() {
                 className="absolute inset-0 bg-[#1f1f1f] text-white flex flex-col justify-end p-4 rounded-2xl"
                 style={{
                   transform: 'rotateY(180deg) translateZ(1px)',
+                  WebkitBackfaceVisibility: 'hidden',
                   backfaceVisibility: 'hidden',
                 }}
               >

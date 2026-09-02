@@ -45,6 +45,7 @@ export default function ProjectCard({ project }: { project: Project }) {
               href={project.repoUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="neo-btn font-display font-semibold text-[13px] text-fg bg-surface px-3.5 py-1.5 no-underline"
             >
               GitHub ↗
@@ -53,12 +54,9 @@ export default function ProjectCard({ project }: { project: Project }) {
         </div>
 
         {project.slug && (
-          <a
-            href={`/projects/${project.slug}`}
-            className="font-display font-semibold text-[13px] text-muted underline underline-offset-2 decoration-accent hover:text-fg transition-colors"
-          >
+          <span className="font-display font-semibold text-[13px] text-muted underline underline-offset-2 decoration-accent">
             Read case study →
-          </a>
+          </span>
         )}
       </div>
     </Wrapper>

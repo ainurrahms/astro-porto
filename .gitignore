@@ -30,3 +30,10 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# personal notes
+obsidian-vault/
+
+# image optimization backups (see CLAUDE.md)
+originals-backup/
+_to_delete/

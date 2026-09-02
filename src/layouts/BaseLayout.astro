@@ -29,15 +29,16 @@ const fullTitle = `${title} | Ainur Rahman`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon-32.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon-180.png" />
     <meta name="generator" content={Astro.generator} />
 
     {/* Anti-flash: set theme before first paint */}
     <script is:inline>
       (function () {
         var stored = localStorage.getItem('theme');
-        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = stored === 'dark' || stored === 'light' ? stored : (prefersDark ? 'dark' : 'light');
+        var theme = stored === 'dark' || stored === 'light' ? stored : 'light';
         document.documentElement.setAttribute('data-theme', theme);
       })();
     </script>

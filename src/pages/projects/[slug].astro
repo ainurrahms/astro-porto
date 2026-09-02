@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageTransition from '../../components/motion/PageTransition';
+import projectsData from '../../content/projects/projects.json';
+import type { Project } from '../../lib/types';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return (projectsData as Project[])
+    .filter((p) => p.slug)
+    .map((project) => ({
+      params: { slug: project.slug },
+      props: { project },
+    }));
+}
+
+const { project } = Astro.props as { project: Project };
+---
+
+<BaseLayout
+  title={project.title}
+  description={project.description}
+>
+  <PageTransition client:load>
+    <div class="w-full max-w-170 mx-auto px-6 pt-16 pb-16">
+
+      <a
+        href="/"
+        class="font-display font-semibold text-[13px] text-muted hover:text-fg transition-colors no-underline"
+      >
+        ← Back to projects
+      </a>
+
+      <header class="mt-6 mb-10">
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <h1 class="font-display font-bold text-[clamp(26px,6vw,40px)] text-fg m-0">{project.title}</h1>
+          {project.year && (
+            <span class="font-mono text-[11px] font-bold text-fg bg-accent border-2 border-ink px-2 py-0.5 shrink-0 leading-snug">
+              {project.year}
+            </span>
+          )}
+        </div>
+        <p class="font-sans text-base text-muted leading-[1.75] m-0 mb-5">{project.description}</p>
+
+        <div class="flex flex-wrap items-center gap-3">
+          {project.techStack.map((tech) => (
+            <span class="font-mono text-[11px] font-semibold text-muted border-2 border-ink px-2 py-0.5 leading-snug">
+              {tech}
+            </span>
+          ))}
+        </div>
+
+        <div class="flex flex-wrap gap-3 mt-6">
+          {project.url && (
+            <a
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="neo-btn font-display font-semibold text-sm text-[#1f1f1f] bg-accent px-4 py-2 no-underline"
+            >
+              Visit site ↗
+            </a>
+          )}
+          {project.repoUrl && (
+            <a
+              href={project.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="neo-btn font-display font-semibold text-sm text-fg bg-surface px-4 py-2 no-underline"
+            >
+              GitHub ↗
+            </a>
+          )}
+        </div>
+      </header>
+
+      {project.screenshots && project.screenshots.length > 0 && (
+        <section class="mb-12 flex flex-col gap-5">
+          {project.screenshots.map((src) => (
+            <div class="border-2 border-ink shadow-neo">
+              <img src={src} alt={project.title} class="w-full h-auto block" loading="lazy" />
+            </div>
+          ))}
+        </section>
+      )}
+
+      {project.challenges && project.challenges.length > 0 && (
+        <section class="mb-4">
+          <h2 class="font-display font-bold text-xl text-fg m-0 mb-4 border-b-2 border-ink pb-3">Challenges</h2>
+          <ul class="flex flex-col gap-3 m-0 pl-5">
+            {project.challenges.map((challenge) => (
+              <li class="font-sans text-sm text-muted leading-relaxed">{challenge}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+    </div>
+  </PageTransition>
+</BaseLayout>
