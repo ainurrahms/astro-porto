@@ -22,7 +22,7 @@ export default function ProjectCard({ project }: { project: Project }) {
       <div className="flex items-start justify-between gap-3 mb-2">
         <h3 className="font-display font-bold text-xl text-fg m-0">{project.title}</h3>
         {project.year && (
-          <span className="font-mono text-[11px] font-bold text-fg bg-accent border-2 border-ink px-2 py-0.5 shrink-0 leading-snug">
+          <span className="font-mono text-[11px] font-bold text-[#1f1f1f] bg-accent border-2 border-ink px-2 py-0.5 shrink-0 leading-snug">
             {project.year}
           </span>
         )}

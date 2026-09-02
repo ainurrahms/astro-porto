@@ -11,5 +11,19 @@
       "First Upwork project, working with an overseas client with very high attention to detail — even small mismatches between the Figma design and the built UI were called out and needed to be fixed."
     ],
     "screenshots": ["/images/projects/carops/hero.png"]
+  },
+  {
+    "title": "Sportteknologi",
+    "slug": "sportteknologi",
+    "description": "A sports news and content platform with WordPress as the backend CMS and Next.js as the frontend, bridged via GraphQL.",
+    "url": "https://www.sportteknologi.id/",
+    "techStack": ["Next.js", "GraphQL", "WPGraphQL", "WordPress"],
+    "year": "2025",
+    "featured": true,
+    "challenges": [
+      "First project using GraphQL — used as the bridge between Next.js and WordPress, where WordPress serves purely as the backend for storing content.",
+      "Used the WPGraphQL plugin to expose WordPress content as GraphQL data so Next.js could query and render it directly in the UI."
+    ],
+    "screenshots": ["/images/projects/sportteknologi/homepage.jpg"]
   }
 ]

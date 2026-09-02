@@ -36,7 +36,7 @@ const { project } = Astro.props as { project: Project };
         <div class="flex items-start justify-between gap-3 mb-3">
           <h1 class="font-display font-bold text-[clamp(26px,6vw,40px)] text-fg m-0">{project.title}</h1>
           {project.year && (
-            <span class="font-mono text-[11px] font-bold text-fg bg-accent border-2 border-ink px-2 py-0.5 shrink-0 leading-snug">
+            <span class="font-mono text-[11px] font-bold text-[#1f1f1f] bg-accent border-2 border-ink px-2 py-0.5 shrink-0 leading-snug">
               {project.year}
             </span>
           )}
