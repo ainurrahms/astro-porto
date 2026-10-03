@@ -25,12 +25,10 @@
     "astro": "^6.1.1",
     "astro-seo": "^1.1.0",
     "framer-motion": "^12.38.0",
-    "lucide-react": "^1.7.0",
     "marked": "^17.0.5",
     "notion-to-md": "^3.1.9",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "simple-icons": "^16.14.0"
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",
