@@ -11,7 +11,7 @@ Personal portfolio website built with **Astro**, **Tailwind CSS v4**, and **Noti
 | Styling | Tailwind CSS v4 |
 | Animations | Framer Motion |
 | Blog CMS | Notion API |
-| Deployment | Vercel |
+| Deployment | Docker (Node standalone) on Dokploy |
 
 ## Design System
 
@@ -24,10 +24,11 @@ Personal portfolio website built with **Astro**, **Tailwind CSS v4**, and **Noti
 
 | Route | Type | Description |
 |-------|------|-------------|
-| `/` | SSR | Home: hero, projects, latest posts, tech stack |
+| `/` | SSR | Home: hero, selected projects, latest posts |
 | `/blog` | SSR | Blog list with tag filter (from Notion) |
 | `/blog/[slug]` | SSR | Blog detail with TOC, reading time, share |
-| `/about` | SSG | Bio, experience timeline, tech stack cards |
+| `/about` | SSG | Bio, photo stack, experience timeline, social links |
+| `/projects/[slug]` | SSG | Project case study: screenshots, tech stack, challenges |
 | `/rss.xml` | SSR | RSS feed |
 
 ## Getting Started
@@ -65,14 +66,14 @@ Create a Notion database with these properties:
 | Excerpt | Text |
 | Featured | Checkbox |
 
-> If environment variables are not set, the site shows mock/demo content automatically.
+> If environment variables are not set (or the Notion API fails), the site still runs, but the blog and the home page's latest posts are empty. `getMockPosts()` in `src/lib/notion.ts` currently returns an empty array.
 
 ## Folder Structure
 
 ```
 src/
   components/
-    ui/           # Button, Badge, Tag
+    ui/           # Button, Badge, Tag, DarkModeToggle, StackedPhotos
     blog/         # PostCard, BlogList, TableOfContents, ShareButtons
     projects/     # ProjectCard, TechLogoCard, TechLogoGrid
     layout/       # Navigation, Footer
@@ -82,6 +83,7 @@ src/
     about.astro         # About
     blog/index.astro    # Blog list
     blog/[slug].astro   # Blog detail
+    projects/[slug].astro # Project case study
     rss.xml.ts          # RSS feed
   layouts/
     BaseLayout.astro    # HTML base with SEO + nav + footer
@@ -98,18 +100,23 @@ src/
 
 ## Deployment
 
-Deploy to Vercel with zero configuration. The `@astrojs/vercel` adapter is pre-configured.
+The site uses the `@astrojs/node` adapter in `standalone` mode and is deployed as a Docker image (see `Dockerfile`) on Dokploy. The container serves on port `4321`.
 
 ```bash
 # Build for production
 yarn build
+
+# Run the built server locally
+node ./dist/server/entry.mjs
 ```
+
+Set `NOTION_API_KEY` and `NOTION_DATABASE_ID` as environment variables on the host.
 
 ## Customization
 
 1. Update `src/content/data/social.json` with your social links
 2. Update `src/content/data/stack.json` with your tech stack
-3. Update `src/content/projects/projects.json` with your projects
+3. Update `src/content/projects/projects.json` with your projects. Entries with a `slug` get a case study page at `/projects/[slug]`; put screenshots in `public/images/projects/<slug>/`
 4. Edit `src/layouts/BaseLayout.astro` to replace "Ainur Rahman" with your actual name
 5. Add your resume PDF to `public/resume.pdf`
 6. Update the `site` URL in `astro.config.mjs`
