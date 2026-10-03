@@ -1,0 +1,10 @@
+node_modules
+dist
+.astro
+.env
+.env.*
+!.env.example
+.git
+obsidian-vault
+originals-backup
+_to_delete
