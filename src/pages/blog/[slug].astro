@@ -7,32 +7,53 @@ import { getPostBySlug, getAllPosts } from '../../lib/notion';
 import { formatDate, estimateReadingTime, extractHeadings } from '../../lib/utils';
 import { marked } from 'marked';
 
-export const prerender = false;
+export async function getStaticPaths() {
+  const allPosts = await getAllPosts();
+
+  const paths = await Promise.all(
+    allPosts.map(async (listed, index) => {
+      const post = await getPostBySlug(listed.slug);
+      if (!post) return null;
+      return {
+        params: { slug: listed.slug },
+        props: {
+          post,
+          prevPost: allPosts[index + 1] ?? null,
+          nextPost: allPosts[index - 1] ?? null,
+        },
+      };
+    })
+  );
+
+  return paths.filter((p) => p !== null);
+}
 
 const { slug } = Astro.params;
-if (!slug) return Astro.redirect('/blog');
-
-const post = await getPostBySlug(slug);
-if (!post) return Astro.redirect('/blog');
-
-const allPosts = await getAllPosts();
-const currentIndex = allPosts.findIndex((p) => p.slug === slug);
-const prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
-const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+const { post, prevPost, nextPost } = Astro.props;
 
 const htmlContent = await marked(post.content ?? '', { breaks: true });
 const headings = extractHeadings(post.content ?? '');
 const readingTime = estimateReadingTime(post.content ?? '');
 const canonicalUrl = `${Astro.site}blog/${slug}`;
 
-const headingHtml = (htmlContent as string).replace(
-  /<h([23])>(.*?)<\/h\1>/g,
-  (_, level, text) => {
+const escapeAttr = (v: string) => v.replace(/"/g, '&quot;');
+
+const headingHtml = (htmlContent as string)
+  .replace(/<h([23])>(.*?)<\/h\1>/g, (_, level, text) => {
     const clean = text.replace(/<[^>]+>/g, '');
     const id = clean.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     return `<h${level} id="${id}">${text}</h${level}>`;
-  }
-);
+  })
+  // Image-only paragraph -> <figure> with alt text as caption
+  .replace(/<p>\s*<img ([^>]*?)alt="([^"]*)"([^>]*)>\s*<\/p>/g, (_, pre, alt, post) => {
+    const caption = alt && !/^image\.?\w*$/i.test(alt) ? `<figcaption>${alt}</figcaption>` : '';
+    return `<figure><img ${pre}alt="${escapeAttr(alt)}"${post} loading="lazy">${caption}</figure>`;
+  })
+  // List item that is only a link -> link card showing the domain
+  .replace(/<li><a href="(https?:\/\/[^"]+)">[^<]*<\/a><\/li>/g, (_, href) => {
+    const host = new URL(href).hostname.replace(/^www\./, '');
+    return `<li class="link-card"><a href="${href}" target="_blank" rel="noopener noreferrer"><span class="link-card-host">${host}</span><span class="link-card-url">${href}</span></a></li>`;
+  });
 ---
 
 <BaseLayout
@@ -58,8 +79,11 @@ const headingHtml = (htmlContent as string).replace(
         <h1 class="font-display font-bold text-[clamp(24px,5vw,36px)] text-fg m-0 mb-4 leading-tight">
           {post.title}
         </h1>
+        {post.excerpt && (
+          <p class="font-sans text-lg text-muted leading-relaxed m-0 mb-5">{post.excerpt}</p>
+        )}
         <div class="flex items-center gap-6 flex-wrap">
-          <time dateTime={post.publishedDate} class="font-sans text-[13px] font-medium text-muted">
+          <time datetime={post.publishedDate} class="font-sans text-[13px] font-medium text-muted">
             {formatDate(post.publishedDate)}
           </time>
           <span class="font-sans text-[13px] text-subtle">{readingTime} min read</span>
@@ -73,7 +97,7 @@ const headingHtml = (htmlContent as string).replace(
       )}
 
       <!-- Layout: content + TOC sidebar on desktop -->
-      <div class="block lg:grid lg:grid-cols-[1fr_200px] lg:gap-8 lg:items-start">
+      <div class:list={['block', headings.length > 0 && 'lg:grid lg:grid-cols-[1fr_200px] lg:gap-8 lg:items-start']}>
 
         <!-- TOC sidebar (desktop only) -->
         {headings.length > 0 && (

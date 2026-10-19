@@ -2,6 +2,9 @@
 dist/
 .vercel/
 
+# Notion images downloaded at build
+public/notion/
+
 # generated types
 .astro/
 
@@ -37,3 +40,7 @@ obsidian-vault/
 # image optimization backups (see CLAUDE.md)
 originals-backup/
 _to_delete/
+
+# yarn berry
+.yarn/*
+!.yarn/releases

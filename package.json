@@ -2,6 +2,7 @@
   "name": "astro-porto",
   "type": "module",
   "version": "0.0.1",
+  "packageManager": "yarn@4.5.0",
   "engines": {
     "node": ">=22.12.0"
   },
@@ -14,11 +15,9 @@
     "format": "prettier --write src"
   },
   "dependencies": {
-    "@astrojs/node": "^10.0.4",
     "@astrojs/react": "^5.0.2",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
-    "@astrojs/vercel": "^10.0.3",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/space-grotesk": "^5.2.10",
     "@notionhq/client": "^5.15.0",
@@ -40,6 +39,7 @@
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.1",
     "tailwindcss": "^4.2.2",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "vite": "^8.3.4"
   }
 }

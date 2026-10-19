@@ -8,8 +8,6 @@ import PostCard from '../components/blog/PostCard';
 import { getFeaturedPosts } from '../lib/notion';
 import projectsData from '../content/projects/projects.json';
 
-export const prerender = false;
-
 const featuredPosts = await getFeaturedPosts();
 const projects = projectsData.filter((p) => p.featured);
 ---
