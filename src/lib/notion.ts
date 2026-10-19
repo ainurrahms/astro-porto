@@ -1,3 +1,7 @@
+import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import { Client } from '@notionhq/client';
 import { NotionToMarkdown } from 'notion-to-md';
 import type { BlogPost, BlogPostContent } from './types';
@@ -14,9 +18,64 @@ function getN2M(notion: Client): NotionToMarkdown {
   return new NotionToMarkdown({ notionClient: notion });
 }
 
+const IMAGE_DIR = path.resolve('public/notion');
+const IMAGE_EXT: Record<string, string> = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/gif': '.gif',
+  'image/webp': '.webp',
+  'image/avif': '.avif',
+  'image/svg+xml': '.svg',
+};
+
+// Notion-hosted file URLs are signed and expire (~1h), so download them at build time.
+// Hash ignores the query string so the same file maps to the same local name across builds.
+async function localizeImage(url: string): Promise<string> {
+  if (!/^https?:\/\//.test(url)) return url;
+
+  try {
+    const { origin, pathname } = new URL(url);
+    const hash = createHash('sha1').update(origin + pathname).digest('hex').slice(0, 16);
+    const urlExt = path.extname(pathname).toLowerCase();
+
+    if (urlExt) {
+      const name = `${hash}${urlExt}`;
+      if (existsSync(path.join(IMAGE_DIR, name))) return `/notion/${name}`;
+    }
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const type = (res.headers.get('content-type') ?? '').split(';')[0].trim();
+    const ext = IMAGE_EXT[type] ?? (urlExt || '.img');
+    const name = `${hash}${ext}`;
+
+    await mkdir(IMAGE_DIR, { recursive: true });
+    await writeFile(path.join(IMAGE_DIR, name), Buffer.from(await res.arrayBuffer()));
+    return `/notion/${name}`;
+  } catch (error) {
+    console.error('Failed to download Notion image:', error);
+    return url;
+  }
+}
+
+async function localizeMarkdownImages(markdown: string): Promise<string> {
+  const urls = new Set<string>();
+  for (const m of markdown.matchAll(/!\[[^\]]*\]\(([^)\s]+)[^)]*\)/g)) urls.add(m[1]);
+
+  const entries = await Promise.all([...urls].map(async (u) => [u, await localizeImage(u)] as const));
+  let result = markdown;
+  for (const [from, to] of entries) {
+    if (from !== to) result = result.split(from).join(to);
+  }
+  return result;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapPageToBlogPost(page: any): BlogPost {
+async function mapPageToBlogPost(page: any): Promise<BlogPost> {
   const props = page.properties;
+  const rawCover: string | undefined =
+    props.Cover?.files?.[0]?.file?.url ?? props.Cover?.files?.[0]?.external?.url ?? undefined;
 
   return {
     id: page.id,
@@ -25,21 +84,43 @@ function mapPageToBlogPost(page: any): BlogPost {
     status: props.Status?.select?.name ?? 'Draft',
     publishedDate: props['Published Date']?.date?.start ?? '',
     tags: props.Tags?.multi_select?.map((t: { name: string }) => t.name) ?? [],
-    coverUrl: props.Cover?.files?.[0]?.file?.url ?? props.Cover?.files?.[0]?.external?.url ?? undefined,
+    coverUrl: rawCover ? await localizeImage(rawCover) : undefined,
     excerpt: props.Excerpt?.rich_text?.[0]?.plain_text ?? undefined,
     featured: props.Featured?.checkbox ?? false,
   };
 }
 
-export async function getAllPosts(): Promise<BlogPost[]> {
+let dataSourceId: Promise<string> | null = null;
+
+// @notionhq/client v5 queries data sources, not databases; resolve the first one of the database.
+function getDataSourceId(notion: Client): Promise<string> {
+  dataSourceId ??= notion.databases
+    .retrieve({ database_id: NOTION_DATABASE_ID })
+    .then((db) => {
+      const id = 'data_sources' in db ? db.data_sources[0]?.id : undefined;
+      if (!id) throw new Error('Notion database has no data source');
+      return id;
+    });
+  return dataSourceId;
+}
+
+let postsPromise: Promise<BlogPost[]> | null = null;
+
+// Memoized so a static build hits the Notion API once, not once per page.
+export function getAllPosts(): Promise<BlogPost[]> {
+  postsPromise ??= fetchAllPosts();
+  return postsPromise;
+}
+
+async function fetchAllPosts(): Promise<BlogPost[]> {
   const notion = getNotionClient();
   if (!notion || !NOTION_DATABASE_ID) {
     return getMockPosts();
   }
 
   try {
-    const response = await notion.databases.query({
-      database_id: NOTION_DATABASE_ID,
+    const response = await notion.dataSources.query({
+      data_source_id: await getDataSourceId(notion),
       filter: {
         property: 'Status',
         select: { equals: 'Published' },
@@ -47,7 +128,17 @@ export async function getAllPosts(): Promise<BlogPost[]> {
       sorts: [{ property: 'Published Date', direction: 'descending' }],
     });
 
-    return response.results.map(mapPageToBlogPost);
+    const posts = await Promise.all(response.results.map(mapPageToBlogPost));
+
+    const seen = new Set<string>();
+    return posts.filter((post) => {
+      if (seen.has(post.slug)) {
+        console.warn(`Duplicate slug "${post.slug}" skipped (${post.id})`);
+        return false;
+      }
+      seen.add(post.slug);
+      return true;
+    });
   } catch (error) {
     console.error('Notion API error:', error);
     return getMockPosts();
@@ -68,8 +159,8 @@ export async function getPostBySlug(slug: string): Promise<BlogPostContent | nul
   }
 
   try {
-    const response = await notion.databases.query({
-      database_id: NOTION_DATABASE_ID,
+    const response = await notion.dataSources.query({
+      data_source_id: await getDataSourceId(notion),
       filter: {
         and: [
           { property: 'Slug', rich_text: { equals: slug } },
@@ -81,10 +172,10 @@ export async function getPostBySlug(slug: string): Promise<BlogPostContent | nul
     if (response.results.length === 0) return null;
 
     const page = response.results[0];
-    const post = mapPageToBlogPost(page);
+    const post = await mapPageToBlogPost(page);
     const n2m = getN2M(notion!);
     const mdBlocks = await n2m.pageToMarkdown(page.id);
-    const content = n2m.toMarkdownString(mdBlocks).parent;
+    const content = await localizeMarkdownImages(n2m.toMarkdownString(mdBlocks).parent);
 
     return { ...post, content };
   } catch (error) {

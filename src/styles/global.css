@@ -128,8 +128,37 @@ body {
 .prose pre code { background: transparent; border: none; padding: 0; color: inherit; font-size: 14px; }
 .prose blockquote { border-left: 4px solid var(--accent); padding-left: 1rem; margin-left: 0; font-style: italic; color: var(--fg-muted); }
 .prose ul, .prose ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose ul ul, .prose ol ol, .prose ul ol, .prose ol ul { margin-top: 0.25rem; margin-bottom: 0; }
+.prose ul ul { list-style: circle; }
 .prose li { margin-bottom: 0.25rem; }
+.prose li::marker { color: var(--fg); }
+.prose h1, .prose h4 { color: var(--fg); font-family: "Space Grotesk", sans-serif; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+.prose h1 { font-size: 32px; }
+.prose h4 { font-size: 18px; }
+.prose strong { font-weight: 700; color: var(--fg); }
+.prose em { font-style: italic; }
+.prose del { text-decoration: line-through; }
+.prose table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 14px; display: block; overflow-x: auto; }
+.prose th, .prose td { border: 2px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
+.prose th { background: var(--bg-card); color: var(--fg); font-weight: 700; }
 .prose img { max-width: 100%; height: auto; border: 2px solid var(--border); }
+.prose figure { margin: 2rem 0; }
+.prose figure img { display: block; width: 100%; box-shadow: var(--shadow-neo); }
+.prose figcaption { margin-top: 0.75rem; font-size: 13px; color: var(--fg-subtle); text-align: center; font-style: italic; }
+.prose li.link-card { list-style: none; margin: 0 0 0.75rem; }
+.prose ul:has(> li.link-card) { padding-left: 0; }
+.prose li.link-card a {
+  display: flex; flex-direction: column; gap: 0.15rem; text-decoration: none;
+  padding: 0.75rem 1rem; background: var(--bg-card); border: 2px solid var(--border);
+  box-shadow: var(--shadow-neo-xs); transition: transform 0.1s, box-shadow 0.1s;
+}
+.prose li.link-card a:hover { transform: translate(2px, 2px); box-shadow: none; background: var(--accent); color: #1f1f1f; }
+.prose .link-card-host { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 14px; color: var(--fg); }
+.prose li.link-card a:hover .link-card-host { color: #1f1f1f; }
+.prose .link-card-url { font-size: 12px; color: var(--fg-subtle); word-break: break-all; }
+.prose p:has(+ ul > li.link-card) { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg); margin-top: 2rem; }
 .prose hr { border: none; border-top: 2px solid var(--border); margin: 2rem 0; }
 
 /* ─── Selection & scrollbar ─────────────────────────────────────── */

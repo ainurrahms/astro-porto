@@ -1,0 +1,10 @@
+name: Rebuild blog
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -fsS -X POST "${{ secrets.CF_DEPLOY_HOOK }}"
