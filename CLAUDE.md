@@ -16,7 +16,7 @@ yarn lint      # eslint src --ext .ts,.tsx
 yarn format    # prettier --write src
 ```
 
-Node `>=22.12.0`. Package manager: **yarn** (ada `yarn.lock`, jangan pakai npm/pnpm).
+Node `>=22.23.4`. Package manager: **yarn** (ada `yarn.lock`, jangan pakai npm/pnpm).
 
 ## Struktur & routing
 
