@@ -1,24 +1,10 @@
-'use client';
-import { motion, type Variants } from 'framer-motion';
 import type { ReactNode } from 'react';
 
 interface PageTransitionProps {
   children: ReactNode;
 }
 
-const pageVariants: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: 'easeOut' },
-  },
-};
-
+// CSS-only fade so SSR HTML is visible before React hydrates (framer-motion's initial="hidden" kept it at opacity 0).
 export default function PageTransition({ children }: PageTransitionProps) {
-  return (
-    <motion.div variants={pageVariants} initial="hidden" animate="visible">
-      {children}
-    </motion.div>
-  );
+  return <div className="page-in">{children}</div>;
 }

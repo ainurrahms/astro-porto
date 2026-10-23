@@ -35,7 +35,7 @@ export default function BlogList({ posts, allTags }: { posts: BlogPost[]; allTag
 
       <motion.div
         variants={containerVariants}
-        initial="hidden"
+        initial={false}
         animate="visible"
         className="flex flex-col gap-4"
       >

@@ -1,8 +1,17 @@
 'use client';
 import { useState } from 'react';
 
-export default function ShareButtons({ title, url }: { title: string; url: string }) {
+export default function ShareButtons({
+  title,
+  url,
+  igImageUrl,
+}: {
+  title: string;
+  url: string;
+  igImageUrl: string;
+}) {
   const [copied, setCopied] = useState(false);
+  const [igBusy, setIgBusy] = useState(false);
 
   const handleCopy = async () => {
     try {
@@ -12,7 +21,24 @@ export default function ShareButtons({ title, url }: { title: string; url: strin
     } catch { /* ignore */ }
   };
 
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+  // Instagram has no web share intent: on mobile the share sheet (with IG in it) takes the image
+  // as a file; elsewhere fall back to downloading it for manual upload.
+  const handleInstagram = async () => {
+    setIgBusy(true);
+    try {
+      const blob = await (await fetch(igImageUrl)).blob();
+      const file = new File([blob], `${title}.png`, { type: 'image/png' });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file] });
+      } else {
+        const href = URL.createObjectURL(blob);
+        const a = Object.assign(document.createElement('a'), { href, download: file.name });
+        a.click();
+        URL.revokeObjectURL(href);
+      }
+    } catch { /* share sheet dismissed or fetch failed */ }
+    setIgBusy(false);
+  };
 
   const btnCls = 'neo-btn inline-flex items-center gap-1.5 px-3.5 py-2 font-display font-semibold text-[13px] text-fg bg-surface no-underline';
 
@@ -24,14 +50,9 @@ export default function ShareButtons({ title, url }: { title: string; url: strin
       >
         {copied ? '✓ Copied!' : '⬡ Copy Link'}
       </button>
-      <a
-        href={twitterUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={btnCls}
-      >
-        Share on X
-      </a>
+      <button onClick={handleInstagram} disabled={igBusy} className={btnCls}>
+        {igBusy ? 'Preparing...' : 'Share to Instagram'}
+      </button>
     </div>
   );
 }

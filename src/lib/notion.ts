@@ -150,7 +150,19 @@ export async function getFeaturedPosts(): Promise<BlogPost[]> {
   return posts.filter((p) => p.featured).slice(0, 4);
 }
 
-export async function getPostBySlug(slug: string): Promise<BlogPostContent | null> {
+const postPromises = new Map<string, Promise<BlogPostContent | null>>();
+
+// Memoized per slug: the post page and its IG thumbnail both need the content during one build.
+export function getPostBySlug(slug: string): Promise<BlogPostContent | null> {
+  let promise = postPromises.get(slug);
+  if (!promise) {
+    promise = fetchPostBySlug(slug);
+    postPromises.set(slug, promise);
+  }
+  return promise;
+}
+
+async function fetchPostBySlug(slug: string): Promise<BlogPostContent | null> {
   const notion = getNotionClient();
   if (!notion || !NOTION_DATABASE_ID) {
     const mock = getMockPosts().find((p) => p.slug === slug);
@@ -175,7 +187,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPostContent | nul
     const post = await mapPageToBlogPost(page);
     const n2m = getN2M(notion!);
     const mdBlocks = await n2m.pageToMarkdown(page.id);
-    const content = await localizeMarkdownImages(n2m.toMarkdownString(mdBlocks).parent);
+    const content = await localizeMarkdownImages(n2m.toMarkdownString(mdBlocks).parent ?? '');
 
     return { ...post, content };
   } catch (error) {
