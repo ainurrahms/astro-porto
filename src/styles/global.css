@@ -146,6 +146,18 @@ body {
 .prose img { max-width: 100%; height: auto; border: 2px solid var(--border); }
 .prose figure { margin: 2rem 0; }
 .prose figure img { display: block; width: 100%; box-shadow: var(--shadow-neo); }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@keyframes page-in { from { opacity: 0; transform: translateY(16px); } }
+.page-in { animation: page-in 0.4s ease-out; }
+/* Loading placeholder until the image fires onload (see data-loaded in blog/[slug].astro) */
+img[data-skeleton]:not([data-loaded]) {
+  min-height: 10rem;
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg) 50%, var(--bg-card) 75%) 0 0 / 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-in, img[data-skeleton]:not([data-loaded]) { animation: none; }
+}
 .prose figcaption { margin-top: 0.75rem; font-size: 13px; color: var(--fg-subtle); text-align: center; font-style: italic; }
 .prose li.link-card { list-style: none; margin: 0 0 0.75rem; }
 .prose ul:has(> li.link-card) { padding-left: 0; }

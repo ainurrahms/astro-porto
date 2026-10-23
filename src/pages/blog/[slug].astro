@@ -47,7 +47,7 @@ const headingHtml = (htmlContent as string)
   // Image-only paragraph -> <figure> with alt text as caption
   .replace(/<p>\s*<img ([^>]*?)alt="([^"]*)"([^>]*)>\s*<\/p>/g, (_, pre, alt, post) => {
     const caption = alt && !/^image\.?\w*$/i.test(alt) ? `<figcaption>${alt}</figcaption>` : '';
-    return `<figure><img ${pre}alt="${escapeAttr(alt)}"${post} loading="lazy">${caption}</figure>`;
+    return `<figure><img ${pre}alt="${escapeAttr(alt)}"${post} loading="lazy" data-skeleton onload="this.dataset.loaded=''">${caption}</figure>`;
   })
   // List item that is only a link -> link card showing the domain
   .replace(/<li><a href="(https?:\/\/[^"]+)">[^<]*<\/a><\/li>/g, (_, href) => {
@@ -92,7 +92,14 @@ const headingHtml = (htmlContent as string)
 
       {post.coverUrl && (
         <div class="mb-10 border-2 border-ink shadow-neo">
-          <img src={post.coverUrl} alt={post.title} class="w-full h-auto block" loading="lazy" />
+          <img
+            src={post.coverUrl}
+            alt={post.title}
+            class="w-full h-auto block"
+            fetchpriority="high"
+            data-skeleton
+            onload="this.dataset.loaded=''"
+          />
         </div>
       )}
 
@@ -115,7 +122,7 @@ const headingHtml = (htmlContent as string)
           <!-- Share -->
           <div class="mt-12 pt-6 border-t-2 border-ink">
             <p class="font-display font-bold text-sm text-fg m-0 mb-3">Share this article</p>
-            <ShareButtons title={post.title} url={canonicalUrl} client:load />
+            <ShareButtons title={post.title} url={canonicalUrl} igImageUrl={`/blog/${slug}/ig.png`} client:load />
           </div>
 
           <!-- Prev / Next -->
